@@ -1,1 +1,0 @@
-# j-yoon.github.io
