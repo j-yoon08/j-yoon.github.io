@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미라 하이킹 - Joyfully & Sustainably</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 2px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .lang-btn:not(.active) {
+            color: #667eea;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #38761d 0%, #14532d 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-50%) translateY(-50%); }
+            100% { transform: translateX(-60%) translateY(-60%); }
+        }
+
+        .hero {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: slideInDown 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mira Device Animation */
+        .mira-device {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 2rem auto;
+            animation: bounce 2s infinite;
+        }
+
+        /* Top half - opened upward */
+        .mira-device-top {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, #2e8b57, #228b22);
+            border-radius: 120px 120px 0 0;
+            border: 6px solid #333;
+            border-bottom: none;
+            transform-origin: bottom center;
+            transform: rotateX(-30deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Bottom half */
+        .mira-device-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(135deg, #2e8b57, #228b22);
+            border-radius: 0 0 120px 120px;
+            border: 6px solid #333;
+            border-top: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Center mechanism - thicker black line */
+        .mira-device-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 16px;
+            background: #333;
+            border-radius: 8px;
+            z-index: 3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Inner camera - large black sphere */
+        .mira-device-camera {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Camera lens */
+        .mira-device-camera::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            border: 2px solid #666;
+        }
+
+        /* Camera lens reflection */
+        .mira-device-camera::after {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            width: 8px;
+            height: 8px;
+            background: #555;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Team Section */
+        .team {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+
+        .team h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56,118,29,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .team-card:hover::before {
+            left: 100%;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .team-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .team-role {
+            font-size: 1rem;
+            color: #38761d;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .team-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: #eafbe7;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #38761d;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102,126,234,0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 5rem 0;
+            background: linear-gradient(45deg, #38761d, #6aa84f);
+            color: white;
+        }
+
+        .benefits h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .benefits-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .benefits-text {
+            font-size: 1.1rem;
+        }
+
+        .benefits-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .benefits-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .connection-demo {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .mini-ball {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ff6b6b 50%, #ffffff 50%);
+            border: 4px solid #333;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        .mini-ball::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 50%;
+        }
+
+        .mini-ball::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #333;
+            transform: translateY(-50%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .connection-line {
+            width: 100px;
+            height: 2px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            animation: flow 2s infinite;
+        }
+
+        @keyframes flow {
+            0% { left: -20px; }
+            100% { left: 100px; }
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 5rem 0;
+            background: #eafbe7;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #38761d;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        /* Call to Action */
+        .cta {
+            background: linear-gradient(135deg, #38761d 0%, #14532d 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.1rem; }
+            .benefits-container { grid-template-columns: 1fr; }
+            .connection-demo { flex-direction: column; gap: 1rem; }
+            .connection-line { width: 2px; height: 50px; }
+            .connection-line::before { 
+                width: 100%; 
+                height: 10px;
+                animation: flowVertical 2s infinite;
+            }
+            .language-switcher {
+                top: 10px;
+                right: 10px;
+                padding: 5px;
+            }
+            .lang-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @keyframes flowVertical {
+            0% { top: -10px; }
+            100% { top: 50px; }
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Hide elements for language switching */
+        [data-lang="en"] { display: none; }
+        body.lang-en [data-lang="ko"] { display: none; }
+        body.lang-en [data-lang="en"] { display: block; }
+    </style>
+</head>
+<body class="lang-ko">
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" onclick="switchLanguage('ko')">한국어</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">English</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="hero">
+                <h1 data-lang="ko">미라</h1>
+                <h1 data-lang="en">Mira</h1>
+                
+                <p data-lang="ko">새로운 것들을 발견하고, 숲에서 놀고, 친구들과 즐거운 경험을 나누도록 초대하는 미라의 순간들을 포착하세요</p>
+                <p data-lang="en">take mira moments that invite you to discover new things, play in the forest, and share joyful experiences with friends</p>
+                
+                <div class="mira-device">
+                    <div class="mira-device-top"></div>
+                    <div class="mira-device-bottom"></div>
+                    <div class="mira-device-center"></div>
+                    <div class="mira-device-camera"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="team">
+        <div class="container">
+            <h2 data-lang="ko">팀원 소개</h2>
+            <h2 data-lang="en">Introduce Our Team</h2>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="photo/1.jpeg" alt="김종윤">
+                    </div>
+                    <h3 data-lang="ko">김종윤</h3>
+                    <h3 data-lang="en">Kim Jongyun</h3>
+                    <div class="team-role" data-lang="ko">팀원1</div>
+                    <div class="team-role" data-lang="en">Team Member 1</div>
+                    <p class="team-description" data-lang="ko">
+                        자연을 사랑하는 개발자
+                    </p>
+                    <p class="team-description" data-lang="en">
+                        Developer who loves nature
+                    </p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="https://raw.githubusercontent.com/j-yoon08/j-yoon.github.io/refs/heads/main/photo/2.jpeg" alt="장수흔">
+                    </div>
+                    <h3 data-lang="ko">장수흔</h3>
+                    <h3 data-lang="en">Shuxin</h3>
+                    <div class="team-role" data-lang="ko">팀원2</div>
+                    <div class="team-role" data-lang="en">Team Member 2</div>
+                    <p class="team-description" data-lang="ko">
+                        자연을 사랑하는 사람
+                    </p>
+                    <p class="team-description" data-lang="en">
+                        Nature lover
+                    </p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="https://raw.githubusercontent.com/j-yoon08/j-yoon.github.io/refs/heads/main/photo/3.jpeg" alt="카미">
+                    </div>
+                    <h3 data-lang="ko">카미</h3>
+                    <h3 data-lang="en">cammi</h3>
+                    <div class="team-role" data-lang="ko">팀원3</div>
+                    <div class="team-role" data-lang="en">Team Member 3</div>
+                    <p class="team-description" data-lang="ko">
+                        열정적인 하이커이자 인터랙션 디자이너 지망생
+                    </p>
+                    <p class="team-description" data-lang="en">
+                        Avid hiker and aspiring interaction designer
+                    </p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="https://raw.githubusercontent.com/j-yoon08/j-yoon.github.io/refs/heads/main/photo/4.jpeg" alt="에디">
+                    </div>
+                    <h3 data-lang="ko">에디</h3>
+                    <h3 data-lang="en">Edi</h3>
+                    <div class="team-role" data-lang="ko">팀원4</div>
+                    <div class="team-role" data-lang="en">Team Member 4</div>
+                    <p class="team-description" data-lang="ko">
+                        모험을 좋아하고 발견할 수 있는 것들을 찾아다니는 사람
+                    </p>
+                    <p class="team-description" data-lang="en">
+                        Adventurous person, who likes discovering the discoverable
+                    </p>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="https://raw.githubusercontent.com/j-yoon08/j-yoon.github.io/refs/heads/main/photo/5.jpeg" alt="양윤서">
+                    </div>
+                    <h3 data-lang="ko">양윤서</h3>
+                    <h3 data-lang="en">Yang Yunseo</h3>
+                    <div class="team-role" data-lang="ko">팀원5</div>
+                    <div class="team-role" data-lang="en">Team Member 5</div>
+                    <p class="team-description" data-lang="ko">
+                        제주 소녀
+                    </p>
+                    <p class="team-description" data-lang="en">
+                        Island girl
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 data-lang="ko">핵심 기능</h2>
+            <h2 data-lang="en">Key Features</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">📸</span>
+                    <h3 data-lang="ko">사진 촬영</h3>
+                    <h3 data-lang="en">Photo Capture</h3>
+                    <p data-lang="ko">고화질 카메라로 하이킹 중 아름다운 순간들을 생생하게 기록하고 저장합니다.</p>
+                    <p data-lang="en">Capture and store beautiful moments during hiking with high-quality camera.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🎤</span>
+                    <h3 data-lang="ko">오디오 녹음</h3>
+                    <h3 data-lang="en">Audio Recording</h3>
+                    <p data-lang="ko">자연의 소리와 하이킹 중 대화를 고음질로 녹음하여 추억을 더욱 생생하게 보존합니다.</p>
+                    <p data-lang="en">Record natural sounds and conversations during hiking in high quality to preserve memories more vividly.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3 data-lang="ko">데이터 수집</h3>
+                    <h3 data-lang="en">Data Collection</h3>
+                    <p data-lang="ko">하이킹 경로, 거리, 시간, 고도 등 다양한 데이터를 자동으로 수집하고 분석합니다.</p>
+                    <p data-lang="en">Automatically collect and analyze various data including hiking routes, distance, time, and altitude.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🤝</span>
+                    <h3 data-lang="ko">친구와 데이터 공유</h3>
+                    <h3 data-lang="en">Data Sharing with Friends</h3>
+                    <p data-lang="ko">다른 하이커의 미라와 쉽게 연결하여 하이킹 데이터, 사진, 경험을 공유할 수 있습니다.</p>
+                    <p data-lang="en">Easily connect with other hikers' Mira to share hiking data, photos, and experiences.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📱</span>
+                    <h3 data-lang="ko">앱과 연동</h3>
+                    <h3 data-lang="en">App Integration</h3>
+                    <p data-lang="ko">전용 모바일 앱을 통해 모든 데이터를 확인하고 관리하며 하이킹 기록을 체계적으로 정리합니다.</p>
+                    <p data-lang="en">Check and manage all data through the dedicated mobile app and systematically organize hiking records.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="benefits">
+        <div class="container">
+            <h2 data-lang="ko">왜 미라인가?</h2>
+            <h2 data-lang="en">Why Mira?</h2>
+            
+            <div class="benefits-container">
+                <div class="benefits-text">
+                    <h3 data-lang="ko">🌟 즐거운 하이킹 (Joyfully)</h3>
+                    <h3 data-lang="en">🌟 Joyful Hiking</h3>
+                    
+                    <p data-lang="ko"><strong>고화질 기록:</strong> 미라의 고화질 카메라와 오디오 녹음 기능으로 하이킹이 모험이 됩니다.</p>
+                    <p data-lang="en"><strong>High-Quality Recording:</strong> Mira's high-quality camera and audio recording features turn hiking into an adventure.</p>
+                    
+                    <p data-lang="ko"><strong>데이터 수집:</strong> 하이킹 경로, 거리, 시간, 고도 등을 자동으로 수집하여 체계적인 데이터를 제공합니다.</p>
+                    <p data-lang="en"><strong>Data Collection:</strong> Automatically collect hiking routes, distance, time, altitude, and more to provide systematic data.</p>
+                    
+                    <p data-lang="ko"><strong>소셜 공유:</strong> 친구들과 사진, 오디오, 하이킹 데이터를 쉽게 공유하여 새로운 연결을 만듭니다.</p>
+                    <p data-lang="en"><strong>Social Sharing:</strong> Easily share photos, audio, and hiking data with friends to create new connections.</p>
+                    
+                    <h3 data-lang="ko" style="margin-top: 2rem;">🌱 지속가능성 (Sustain)</h3>
+                    <h3 data-lang="en" style="margin-top: 2rem;">🌱 Sustainability</h3>
+                    
+                    <p data-lang="ko"><strong>디지털 기록:</strong> 모든 하이킹 데이터를 디지털로 저장하여 카본 배출을 줄이고 환경을 보호합니다.</p>
+                    <p data-lang="en"><strong>Digital Recording:</strong> Store all hiking data digitally to reduce carbon emissions and protect the environment.</p>
+                    
+                    <p data-lang="ko"><strong>앱 연동:</strong> 전용 앱을 통해 모든 데이터를 효율적으로 관리하고 분석합니다.</p>
+                    <p data-lang="en"><strong>App Integration:</strong> Efficiently manage and analyze all data through the dedicated app.</p>
+                    
+                    <p data-lang="ko"><strong>지속가능성:</strong> 재사용 가능한 디바이스로 일회용 용품 사용을 줄여 지속가능한 하이킹을 실현합니다.</p>
+                    <p data-lang="en"><strong>Sustainability:</strong> Achieve sustainable hiking by reducing disposable item usage with a reusable device.</p>
+                </div>
+                <div class="benefits-visual">
+                    <div class="connection-demo">
+                        <div class="mini-ball"></div>
+                        <div class="connection-line"></div>
+                        <div class="mini-ball" style="animation-delay: 1s;"></div>
+                    </div>
+                    <p data-lang="ko" style="text-align: center; font-size: 1.1rem;">하이커들 간의 연결과 경험 공유</p>
+                    <p data-lang="en" style="text-align: center; font-size: 1.1rem;">Connection and Experience Sharing Between Hikers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <h2 data-lang="ko">어떻게 작동하나요?</h2>
+            <h2 data-lang="en">How Does It Work?</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 data-lang="ko">미라 활성화</h3>
+                    <h3 data-lang="en">Activate Mira</h3>
+                    <p data-lang="ko">하이킹 시작 전 미라를 켜고 앱과 연동합니다.</p>
+                    <p data-lang="en">Turn on the Mira before starting your hike and connect it to the app.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 data-lang="ko">자동 기록 시작</h3>
+                    <h3 data-lang="en">Start Auto Recording</h3>
+                    <p data-lang="ko">경로, 거리, 시간이 자동으로 기록되며 사진과 오디오를 촬영합니다.</p>
+                    <p data-lang="en">Routes, distances, and time are automatically recorded while capturing photos and audio.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 data-lang="ko">하이커와 만남</h3>
+                    <h3 data-lang="en">Meet Other Hikers</h3>
+                    <p data-lang="ko">다른 하이커의 미라와 터치하여 정보를 교환합니다.</p>
+                    <p data-lang="en">Touch other hikers' Mira to exchange information.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 data-lang="ko">데이터 공유</h3>
+                    <h3 data-lang="en">Share Data</h3>
+                    <p data-lang="ko">앱을 통해 사진, 오디오, 하이킹 데이터를 확인하고 친구들과 공유합니다.</p>
+                    <p data-lang="en">Check photos, audio, and hiking data through the app and share with friends.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2 data-lang="ko">하이킹의 미래를 경험하세요</h2>
+            <h2 data-lang="en">Experience the Future of Hiking</h2>
+            
+            <p data-lang="ko">미라와 함께 더 즐겁고 지속가능한 하이킹 모험을 시작하세요!</p>
+            <p data-lang="en">Start your more joyful and sustainable hiking adventure with Mira!</p>
+            
+            <a href="#" class="cta-button" data-lang="ko">자세히 알아보기</a>
+            <a href="#" class="cta-button" data-lang="en">Learn More</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p data-lang="ko">&copy; 2025 미라 프로젝트. Joyfully & Sustainably Designed.</p>
+            <p data-lang="en">&copy; 2025 Mira Project. Joyfully & Sustainably Designed.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Language switching functionality
+        function switchLanguage(lang) {
+            const body = document.body;
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            // Update body class
+            body.className = `lang-${lang}`;
+            
+            // Update active button
+            langButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            
+            // Store preference
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // Load saved language preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferred-language') || 'ko';
+            const langButton = document.querySelector(`[onclick="switchLanguage('${savedLang}')"]`);
+            
+            if (langButton && savedLang !== 'ko') {
+                switchLanguage(savedLang);
+                langButton.classList.add('active');
+                document.querySelector(`[onclick="switchLanguage('ko')"]`).classList.remove('active');
+            }
+        });
+
+        // Scroll animation observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Apply animation to elements after page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const animateElements = document.querySelectorAll('.feature-card, .step, .team-card');
+            animateElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Mira device click event
+        document.querySelector('.mira-device').addEventListener('click', function() {
+            this.style.animation = 'none';
+            setTimeout(() => {
+                this.style.animation = 'bounce 2s infinite';
+            }, 10);
+        });
+    </script>
+</body>
+</html>
